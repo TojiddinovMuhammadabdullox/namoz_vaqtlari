@@ -1,8 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:namoz_vaqtlari/controller/praying_controller.dart';
 import 'package:namoz_vaqtlari/models/praying.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+
+import 'package:namoz_vaqtlari/views/screens/tasbeh_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -109,6 +112,51 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Namoz Vaqtlari',
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF1F2F98),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF1F2F98),
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home, color: Color(0xFF1F2F98)),
+              title: Text('Home', style: TextStyle(color: Color(0xFF1F2F98))),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.panorama_fish_eye, color: Color(0xFF1F2F98)),
+              title: Text('Tasbeh', style: TextStyle(color: Color(0xFF1F2F98))),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => TasbehScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
