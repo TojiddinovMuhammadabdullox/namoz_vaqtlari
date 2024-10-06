@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:namoz_vaqtlari/models/praying.dart';
 
 class PrayerTimesController {
-  Future<PrayerTimes> fetchPrayerTimes(String city) async {
-    final response = await http.get(Uri.parse(
-        'https://api.aladhan.com/v1/timingsByCity/30-07-2024?city=$city&country=Uzbekistan&method=2'));
+  Future<PrayerTimes> fetchPrayerTimes(String region) async {
+    final response = await http.get(
+      Uri.parse('https://islomapi.uz/api/present/day?region=$region'),
+    );
 
     if (response.statusCode == 200) {
       return PrayerTimes.fromJson(json.decode(response.body));

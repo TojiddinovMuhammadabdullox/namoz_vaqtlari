@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:namoz_vaqtlari/controller/praying_controller.dart';
 import 'package:namoz_vaqtlari/models/praying.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-
-import 'package:namoz_vaqtlari/views/screens/tasbeh_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PrayerTimesController _controller = PrayerTimesController();
   PrayerTimes? _prayerTimes;
-  String _selectedRegion = 'Tashkent';
+  String _selectedRegion = 'Toshkent';
   late Timer _timer;
   late DateTime _currentTime;
   String _currentPrayer = '';
@@ -25,19 +22,19 @@ class _HomeScreenState extends State<HomeScreen> {
   String _timeUntilNextPrayer = '';
 
   final List<String> _regions = [
-    'Andijan',
-    'Bukhara',
-    'Fergana',
-    'Jizzakh',
-    'Karakalpakstan',
-    'Kashkadarya',
-    'Khorezm',
+    'Andijon',
+    'Buxoro',
+    'Farg‘ona',
+    'Jizzax',
+    'Qoraqalpog‘iston',
+    'Qashqadaryo',
+    'Xorazm',
     'Namangan',
     'Navoiy',
-    'Samarkand',
+    'Samarqand',
     'Sirdaryo',
-    'Surkhandarya',
-    'Tashkent',
+    'Surxondaryo',
+    'Toshkent',
   ];
 
   @override
@@ -60,11 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _fetchPrayerTimes() async {
-    final prayerTimes = await _controller.fetchPrayerTimes(_selectedRegion);
-    setState(() {
-      _prayerTimes = prayerTimes;
-      _updateCurrentPrayer();
-    });
+    try {
+      final prayerTimes = await _controller.fetchPrayerTimes(_selectedRegion);
+      setState(() {
+        _prayerTimes = prayerTimes;
+        _updateCurrentPrayer();
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void _updateCurrentPrayer() {
@@ -120,46 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: const Color(0xFF1F2F98),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color(0xFF1F2F98),
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home, color: Color(0xFF1F2F98)),
-              title: const Text('Home',
-                  style: TextStyle(color: Color(0xFF1F2F98))),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading:
-                  const Icon(Icons.panorama_fish_eye, color: Color(0xFF1F2F98)),
-              title: const Text('Tasbeh',
-                  style: TextStyle(color: Color(0xFF1F2F98))),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => TasbehScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -178,16 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                     _buildRegionDropdown(),
                     const SizedBox(height: 20),
+                    _buildHorizontalPrayerCards(), // New prayer card slider
                   ],
                 ),
               ),
-              if (_prayerTimes == null)
-                const SliverFillRemaining(
-                  child: Center(
-                      child: CircularProgressIndicator(color: Colors.white)),
-                )
-              else
-                _buildPrayerTimesList(),
             ],
           ),
         ),
@@ -196,202 +151,132 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCurrentTimeAndPrayer() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                spreadRadius: 5,
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Text(
-                DateFormat('HH:mm:ss').format(_currentTime),
-                style: TextStyle(
-                  fontSize: constraints.maxWidth > 600 ? 48 : 32,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 10.0,
-                      color: Colors.black.withOpacity(0.3),
-                      offset: const Offset(5.0, 5.0),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                DateFormat('d MMMM yyyy').format(_currentTime),
-                style: const TextStyle(fontSize: 18, color: Colors.white70),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Hozirgi namoz',
-                        style: TextStyle(fontSize: 14, color: Colors.white70),
-                      ),
-                      Text(
-                        _currentPrayer,
-                        style: const TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'Keyingi namoz',
-                        style: TextStyle(fontSize: 14, color: Colors.white70),
-                      ),
-                      Text(
-                        _nextPrayer,
-                        style: const TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Qolgan vaqt: $_timeUntilNextPrayer',
-                style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildRegionDropdown() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedRegion,
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                _selectedRegion = newValue;
-                _prayerTimes = null;
-              });
-              _fetchPrayerTimes();
-            }
-          },
-          items: _regions.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value, style: const TextStyle(color: Colors.white)),
-            );
-          }).toList(),
-          dropdownColor: const Color(0xFF1F2F98),
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-          isExpanded: true,
-          style: const TextStyle(fontSize: 18, color: Colors.white),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrayerTimesList() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (BuildContext context, int index) {
-          final prayerNames = [
-            'Bomdod',
-            'Quyosh',
-            'Peshin',
-            'Asr',
-            'Shom',
-            'Xufton'
-          ];
-          final prayerTimes = [
-            _prayerTimes!.fajr,
-            _prayerTimes!.sunrise,
-            _prayerTimes!.dhuhr,
-            _prayerTimes!.asr,
-            _prayerTimes!.maghrib,
-            _prayerTimes!.isha,
-          ];
-          final icons = [
-            Icons.nightlight_round,
-            Icons.wb_sunny,
-            Icons.wb_sunny_outlined,
-            Icons.wb_twighlight,
-            Icons.nights_stay,
-            Icons.bedtime,
-          ];
-          return _buildPrayerTimeItem(
-              prayerNames[index], prayerTimes[index], icons[index]);
-        },
-        childCount: 6,
-      ),
-    );
-  }
-
-  Widget _buildPrayerTimeItem(String name, String time, IconData icon) {
-    final isCurrentPrayer = name == _currentPrayer;
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isCurrentPrayer
-            ? const Color(0xFF3D4EC6)
-            : Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            spreadRadius: 1,
+      child: Column(
+        children: [
+          Text(
+            DateFormat('HH:mm:ss').format(_currentTime),
+            style: const TextStyle(
+              fontSize: 32,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            DateFormat('d MMMM yyyy').format(_currentTime),
+            style: const TextStyle(fontSize: 18, color: Colors.white70),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Hozirgi namoz: $_currentPrayer',
+            style: const TextStyle(fontSize: 24, color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Keyingi namozgacha: $_timeUntilNextPrayer',
+            style: const TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            shape: BoxShape.circle,
+    );
+  }
+
+  Widget _buildRegionDropdown() {
+    return DropdownButton<String>(
+      value: _selectedRegion,
+      dropdownColor: const Color(0xFF1F2F98),
+      iconEnabledColor: Colors.white,
+      style: const TextStyle(color: Colors.white, fontSize: 18),
+      onChanged: (String? newValue) {
+        setState(() {
+          _selectedRegion = newValue!;
+          _fetchPrayerTimes();
+        });
+      },
+      items: _regions.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildHorizontalPrayerCards() {
+    final List<Map<String, String>> prayerData = [
+      {'name': 'Bomdod', 'time': _prayerTimes?.fajr ?? '00:00'},
+      {'name': 'Quyosh', 'time': _prayerTimes?.sunrise ?? '00:00'},
+      {'name': 'Peshin', 'time': _prayerTimes?.dhuhr ?? '00:00'},
+      {'name': 'Asr', 'time': _prayerTimes?.asr ?? '00:00'},
+      {'name': 'Shom', 'time': _prayerTimes?.maghrib ?? '00:00'},
+      {'name': 'Xufton', 'time': _prayerTimes?.isha ?? '00:00'},
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: prayerData.map((prayer) {
+          return _buildPrayerTimeCard(prayer['name']!, prayer['time']!);
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildPrayerTimeCard(String prayerName, String prayerTime) {
+    return Container(
+      width: 150,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF3445AF), Color(0xFF1F2F98)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(2, 4),
           ),
-          child: Icon(icon, color: Colors.white),
+        ],
+      ),
+      child: Card(
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        title: Text(
-          name,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        trailing: Text(
-          time,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                prayerName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                prayerTime,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white70,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

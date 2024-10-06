@@ -16,14 +16,14 @@ class PrayerTimes {
   });
 
   factory PrayerTimes.fromJson(Map<String, dynamic> json) {
-    final timings = json['data']['timings'];
+    final timings = json['times'];
     return PrayerTimes(
-      fajr: timings['Fajr'],
-      sunrise: timings['Sunrise'],
-      dhuhr: timings['Dhuhr'],
-      asr: timings['Asr'],
-      maghrib: timings['Maghrib'],
-      isha: timings['Isha'],
+      fajr: timings['tong_saharlik'],
+      sunrise: timings['quyosh'],
+      dhuhr: timings['peshin'],
+      asr: timings['asr'],
+      maghrib: timings['shom_iftor'],
+      isha: timings['hufton'],
     );
   }
 }
